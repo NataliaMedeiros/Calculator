@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="numbers" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name ="android:layout_width">102dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textColor">@color/material_on_primary_emphasis_high_type</item>
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="test" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name ="android:layout_width">102dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textColor">#B00B69</item>
+        <item name="android:textSize">24dp</item>
+    </style>
+
+    <style name="operators" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name ="android:layout_width">83dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textColor">#B00B69</item>
+        <item name="android:textSize">24dp</item>
+    </style>
+
+</resources>

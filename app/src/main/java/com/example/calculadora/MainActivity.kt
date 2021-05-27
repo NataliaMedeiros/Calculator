@@ -8,10 +8,10 @@ import com.example.calculadora.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var firstNumber: Double = 0.0
-    private var secondNumber: Double = 0.0
+    private var firstNumber: String? = null
+    private var secondNumber: String? = null
     private var action: String? = null
-    private var actionTwo: String? = null
+    private var isDisplayingResult = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,123 +36,131 @@ class MainActivity : AppCompatActivity() {
         binding.multiplication.setOnClickListener { multiplication() }
         binding.division.setOnClickListener { division() }
         binding.percent.setOnClickListener { percent() }
-        binding.undefined.setOnClickListener { startActivity(Intent(this, Calculate2::class.java))}
+        binding.undefined.setOnClickListener { startActivity(Intent(this, Calculate2::class.java)) }
     }
 
     private fun writeNumber(button: Button) {
-        if (binding.screen.text == "0"){
-            binding.screen.text =""
-        }
-        if (actionTwo == "equal") {
+        if (isDisplayingResult) {
             erase()
-            binding.screen.text = ("${binding.screen.text}${button.text}")
-            actionTwo = ""
-        } else {
-            binding.screen.text = ("${binding.screen.text}${button.text}")
         }
+        binding.screen.text = ("${binding.screen.text}${button.text}")
+
     }
 
     private fun erase() {
         binding.screen.text = ""
-        firstNumber = 0.0
-        secondNumber = 0.0
+        firstNumber = null
+        secondNumber = null
         action = null
-        actionTwo = null
+        isDisplayingResult = false
     }
 
     private fun delete() {
         binding.screen.text = binding.screen.text.dropLast(1)
     }
 
-    private fun savefirstNumberAndErase() {
+    private fun saveFirstNumberAndErase() {
         if (binding.screen.text.toString().isNotBlank()) {
-            firstNumber = binding.screen.text.toString().toDouble()
+            firstNumber = binding.screen.text.toString()
         }
         binding.screen.text = ""
     }
 
     private fun saveSecondNumberAndErase() {
         if (binding.screen.text.toString().isNotBlank()) {
-            secondNumber = binding.screen.text.toString().toDouble()
+            secondNumber = binding.screen.text.toString()
         }
         binding.screen.text = ""
     }
 
-    private fun sum() {
-        if (firstNumber == 0.0) {
-            savefirstNumberAndErase()
+    private fun saveScreen(){
+        if (firstNumber == null) {
+            saveFirstNumberAndErase()
         } else {
             saveSecondNumberAndErase()
         }
+    }
+    private fun sum() {
+        saveScreen()
         action = "sum"
     }
 
     fun minus() {
-        if (firstNumber == 0.0) {
-            savefirstNumberAndErase()
-        } else {
-            saveSecondNumberAndErase()
-        }
+        saveScreen()
         action = "minus"
 
     }
 
     private fun multiplication() {
-        if (firstNumber == 0.0) {
-            savefirstNumberAndErase()
-        } else {
-            saveSecondNumberAndErase()
-        }
+       saveScreen()
         action = "multiplication"
     }
 
     private fun division() {
-        if (firstNumber == 0.0) {
-            savefirstNumberAndErase()
-        } else {
-            saveSecondNumberAndErase()
-        }
+        saveScreen()
         action = "division"
     }
 
     private fun percent() {
-        if (firstNumber != 0.0) {
+        val screenNumber = binding.screen.text.toString().toDouble()
+        if (action == null) {
+            action = "percent"
+            firstNumber = "${screenNumber / 100}"
+        } else {
             if (action == "sum" || action == "minus") {
-                secondNumber = firstNumber * (binding.screen.text.toString().toDouble() / 100)
+                secondNumber = "${firstNumber!!.toDouble() * screenNumber / 100}"
                 binding.screen.text = ""
             } else {
-                secondNumber = binding.screen.text.toString().toDouble() / 100
+                secondNumber = "${screenNumber / 100}"
                 binding.screen.text = ""
             }
-            //  saveSecondNumberAndErase()
-        } else {
-            firstNumber = binding.screen.text.toString().toDouble() / 100
-            binding.screen.text = ""
-        }
-        if (action != null) {
-            actionTwo = "percent"
         }
 
     }
 
     private fun equal() {
-        actionTwo = "equal"
-        if (binding.screen.text.toString().isNotBlank()) {
-            if (secondNumber == 0.0) {
-                secondNumber = binding.screen.text.toString().toDouble()
-            }
+        isDisplayingResult = true
+        if (binding.screen.text.toString().isNotBlank() && secondNumber == null) {
+            secondNumber = binding.screen.text.toString()
         }
-        when (action) {
-            "sum" -> binding.screen.text = getString(R.string.result, firstNumber, "+", secondNumber, firstNumber + secondNumber)
-            "minus" -> binding.screen.text = getString(R.string.result, firstNumber, "-", secondNumber, firstNumber - secondNumber)
-            "multiplication" -> binding.screen.text = getString(R.string.result, firstNumber, "X", secondNumber, firstNumber * secondNumber)
-            "division" ->
-                if (secondNumber != 0.0) {
-                    binding.screen.text = getString(R.string.result, firstNumber, "/", secondNumber, firstNumber / secondNumber)
-                } else {
-                    binding.screen.text = ("Can't divide by zero")
-                }
-            else -> binding.screen.text = "$secondNumber"
+        if (firstNumber != null && secondNumber != null) {
+            binding.screen.text = when (action) {
+                "sum" -> getString(
+                    R.string.result,
+                    firstNumber,
+                    "+",
+                    secondNumber,
+                    firstNumber!!.toDouble() + secondNumber!!.toDouble()
+                )
+                "minus" -> getString(
+                    R.string.result,
+                    firstNumber,
+                    "-",
+                    secondNumber,
+                    firstNumber!!.toDouble() - secondNumber!!.toDouble()
+                )
+                "multiplication" -> getString(
+                    R.string.result,
+                    firstNumber,
+                    "X",
+                    secondNumber,
+                    firstNumber!!.toDouble() * secondNumber!!.toDouble()
+                )
+                "division" ->
+                    if (secondNumber!!.toDouble() != 0.0) {
+                        getString(
+                            R.string.result,
+                            firstNumber,
+                            "/",
+                            secondNumber,
+                            firstNumber!!.toDouble() / secondNumber!!.toDouble()
+                        )
+                    } else {
+                        "Can't divide by zero"
+                    }
+                "percent" -> firstNumber
+                else -> secondNumber
+            }
         }
     }
 }
